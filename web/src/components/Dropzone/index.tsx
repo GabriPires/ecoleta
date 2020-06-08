@@ -4,13 +4,20 @@ import { FiUpload } from 'react-icons/fi';
 
 import './style.css';
 
-const Dropzone = () => {
-  const [selectedFIleUrl, setSelectedFileUrl] = useState('');
+interface Props {
+  onFileUploaded: (file: File) => void;
+}
+
+const Dropzone: React.FC<Props> = ({ onFileUploaded }) => {
+
+  const [selectedFileUrl, setSelectedFileUrl] = useState('');
   const onDrop = useCallback(acceptedFiles => {
     const file = acceptedFiles[0];
     const fileUrl = URL.createObjectURL(file);
+
     setSelectedFileUrl(fileUrl);
-  }, [])
+    onFileUploaded(file);
+  }, [onFileUploaded])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
     onDrop,
     accept: 'image/*'
@@ -20,8 +27,8 @@ const Dropzone = () => {
     <div className="dropzone" {...getRootProps()}>
       <input {...getInputProps()} accept="image/*"/>
 
-      { selectedFIleUrl 
-      ? <img src={selectedFIleUrl} alt="Imagem do ponto" style={{borderRadius: 10}}/>
+      { selectedFileUrl 
+      ? <img src={selectedFileUrl} alt="Imagem do ponto" style={{borderRadius: 10}}/>
       : (
           isDragActive ?
             <p><FiUpload/>Solte a imagem aqui</p> :
